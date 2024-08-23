@@ -1,0 +1,16 @@
+.square {
+    width: 100px;
+    height: 100px;
+    background-color: blueviolet;
+    position: absolute;
+    cursor: pointer;
+}
+
+.ground {
+    width: 100%;
+    height: 50px;
+    background-color: green;
+    position: absolute;
+    top: 600px;
+    left: 0;
+}
