@@ -1,5 +1,5 @@
 class Shape {
-    constructor(element) {
+    constructor(element, initialLeft = 0, initialTop = 0) {
         this.element = element;
         this.offsetX = 0;
         this.offsetY = 0;
@@ -8,6 +8,11 @@ class Shape {
         this.velocityY = 0;
         this.gravity = 0.5;
         this.dragCoefficient = 0.98;
+        this.timeBounced = 0;
+
+
+        this.element.style.left = `${initialLeft}px`;
+        this.element.style.top = `${initialTop}px`;
 
         this.init();
     }
@@ -25,6 +30,7 @@ class Shape {
         this.element.style.transition = 'none';
         this.velocityX = 0;
         this.velocityY = 0;
+        this.timeBounced = 0;
     }
 
     onMouseMove(event) {
@@ -37,7 +43,6 @@ class Shape {
     onMouseUp(event) {
         if (this.isDragging) {
             this.isDragging = false;
-
             const mouseX = event.clientX;
             const mouseY = event.clientY;
             const boxRect = this.element.getBoundingClientRect();
@@ -54,27 +59,57 @@ class Shape {
     animateProjectile() {
         const groundTop = document.querySelector('.ground').offsetTop;
 
-        this.velocityY += this.gravity; 
+        this.velocityY += this.gravity;
+
         let newLeft = parseFloat(this.element.style.left) + this.velocityX;
         let newTop = parseFloat(this.element.style.top) + this.velocityY;
 
         this.velocityX *= this.dragCoefficient;
 
-        if (newTop + this.element.offsetHeight > groundTop) {
+        if (newTop + this.element.offsetHeight >= groundTop) {
             newTop = groundTop - this.element.offsetHeight;
+            this.velocityY *= -0.7;
+            this.timeBounced += 1;
+            
+
+            if(Math.abs(this.velocityY) < 0.1) {
+                this.velocityY = 0;
+            }
+
+            this.velocityX *= 0.95;
+
+            if (Math.abs(this.velocityX) < 0.1) {
+                this.velocityX = 0;
+            }
+        }
+
+        if(this.timeBounced > 2) {
+            this.velocityX = 0;
             this.velocityY = 0;
-            this.velocityX *=0.95;
         }
 
         this.element.style.left = `${newLeft}px`;
         this.element.style.top = `${newTop}px`;
 
-        if (newTop + this.element.offsetHeight < groundTop) {
+        if (Math.abs(this.velocityY) > 0.1 || Math.abs(this.velocityX) > 0.1) {
             requestAnimationFrame(this.animateProjectile.bind(this));
         }
+
+        
     }
+
+    // rebound() {
+    //     if(newTop + this.element.offsetHeight > groundTop && this.timeBounced < 4) {
+    //         this.velocityY *= -0.7;
+    //         this.velocityX *= -0.95;
+    //         this.timeBounced += 1;
+    //     }
+
+    // }
 }
 
-
 const squareElement = document.getElementById("square");
-const square = new Shape(squareElement);
+const square = new Shape(squareElement, 50, 100); 
+
+const circleElement = document.getElementById("circle");
+const circle = new Shape(circleElement, 150, 100); 
