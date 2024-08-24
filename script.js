@@ -9,7 +9,7 @@ class Shape {
         this.gravity = 0.5;
         this.dragCoefficient = 0.98;
         this.timeBounced = 0;
-
+        this.angle = 0;
 
         this.element.style.left = `${initialLeft}px`;
         this.element.style.top = `${initialTop}px`;
@@ -31,12 +31,32 @@ class Shape {
         this.velocityX = 0;
         this.velocityY = 0;
         this.timeBounced = 0;
+
+        const rect = this.element.getBoundingClientRect();
+        this.centerX = rect.left + (rect.width / 2);
+        this.centerY = rect.top + (rect.height / 2);
+
+        requestAnimationFrame(this.rotateToBalance.bind(this));
     }
 
     onMouseMove(event) {
         if (this.isDragging) {
-            this.element.style.left = `${event.clientX - this.offsetX}px`;
-            this.element.style.top = `${event.clientY - this.offsetY}px`;
+            const newX = event.clientX - this.offsetX;
+            const newY = event.clientY - this.offsetY;
+            this.element.style.left = `${newX}px`;
+            this.element.style.top = `${newY}px`;
+
+            const rect = this.element.getBoundingClientRect();
+            const centerX = rect.left + (rect.width / 2);
+            const centerY = rect.top + (rect.height / 2);
+
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+            const degX = mouseX - centerX;
+            const degY = mouseY - centerY;
+            this.angle = Math.atan2(degY, degX) * (180 / Math.PI); 
+
+            this.element.style.transform = `rotate(${this.angle}deg)`;
         }
     }
 
@@ -56,6 +76,13 @@ class Shape {
         }
     }
 
+    rotateToBalance() {
+        const offsetXFromCenter = this.offsetX - (this.element.getBoundingClientRect().width / 2);
+        this.angle = offsetXFromCenter * 0.1;  
+
+        this.element.style.transform = `rotate(${this.angle}deg)`;
+    }
+
     animateProjectile() {
         const groundTop = document.querySelector('.ground').offsetTop;
 
@@ -70,9 +97,8 @@ class Shape {
             newTop = groundTop - this.element.offsetHeight;
             this.velocityY *= -0.7;
             this.timeBounced += 1;
-            
 
-            if(Math.abs(this.velocityY) < 0.1) {
+            if (Math.abs(this.velocityY) < 0.1) {
                 this.velocityY = 0;
             }
 
@@ -83,7 +109,7 @@ class Shape {
             }
         }
 
-        if(this.timeBounced > 2) {
+        if (this.timeBounced > 2) {
             this.velocityX = 0;
             this.velocityY = 0;
         }
@@ -94,18 +120,7 @@ class Shape {
         if (Math.abs(this.velocityY) > 0.1 || Math.abs(this.velocityX) > 0.1) {
             requestAnimationFrame(this.animateProjectile.bind(this));
         }
-
-        
     }
-
-    // rebound() {
-    //     if(newTop + this.element.offsetHeight > groundTop && this.timeBounced < 4) {
-    //         this.velocityY *= -0.7;
-    //         this.velocityX *= -0.95;
-    //         this.timeBounced += 1;
-    //     }
-
-    // }
 }
 
 const squareElement = document.getElementById("square");
