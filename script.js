@@ -109,6 +109,7 @@ class Shape {
             }
         }
 
+        //here I have limited the shape to bounce to maximum for 3 times. It's not neccessary.
         if (this.timeBounced > 2) {
             this.velocityX = 0;
             this.velocityY = 0;
@@ -116,7 +117,8 @@ class Shape {
 
         this.element.style.left = `${newLeft}px`;
         this.element.style.top = `${newTop}px`;
-
+        
+        //Here if the Shape is above the ground we are allowing it to fall
         if (Math.abs(this.velocityY) > 0.1 || Math.abs(this.velocityX) > 0.1) {
             requestAnimationFrame(this.animateProjectile.bind(this));
         }
