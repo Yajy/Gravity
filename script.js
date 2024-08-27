@@ -98,19 +98,19 @@ class Shape {
             this.velocityY *= -0.7;
             this.timeBounced += 1;
 
-            if (Math.abs(this.velocityY) < 0.1) {
-                this.velocityY = 0;
-            }
+            // if (Math.abs(this.velocityY) < 0.1) {
+            //     this.velocityY = 0;
+            // }
 
             this.velocityX *= 0.95;
 
-            if (Math.abs(this.velocityX) < 0.1) {
-                this.velocityX = 0;
-            }
+            // if (Math.abs(this.velocityX) < 0.1) {
+            //     this.velocityX = 0;
+            // }
         }
 
-        //here I have limited the shape to bounce to maximum for 3 times. It's not neccessary.
-        if (this.timeBounced > 2) {
+        //here I have limited the shape to bounce to maximum for 4 times. It's not neccessary.
+        if (this.timeBounced > 4) {
             this.velocityX = 0;
             this.velocityY = 0;
         }
@@ -119,7 +119,9 @@ class Shape {
         this.element.style.top = `${newTop}px`;
         
         //Here if the Shape is above the ground we are allowing it to fall
-        if (Math.abs(this.velocityY) > 0.1 || Math.abs(this.velocityX) > 0.1) {
+        /* Resolve : comparison with 0 : now object is not stucking in mid air,
+        after successfull bounce */
+        if (Math.abs(this.velocityY) > 0 || Math.abs(this.velocityX) > 0) {
             requestAnimationFrame(this.animateProjectile.bind(this));
         }
     }
